@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>معرض صوري</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Tahoma, sans-serif;
+      background: #0f1117;
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      padding: 35px 15px 20px;
+    }
+
+    header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    header p {
+      color: #aaa;
+      font-size: 15px;
+    }
+
+    .container {
+      width: 94%;
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    .upload-box {
+      background: #181c25;
+      border: 2px dashed #555;
+      border-radius: 18px;
+      padding: 30px 20px;
+      text-align: center;
+      margin: 20px 0;
+      transition: 0.2s;
+    }
+
+    .upload-box:hover {
+      border-color: #2ea043;
+    }
+
+    .upload-icon {
+      font-size: 50px;
+      margin-bottom: 12px;
+    }
+
+    .upload-box h2 {
+      margin-bottom: 10px;
+    }
+
+    .upload-box p {
+      color: #aaa;
+      margin-bottom: 20px;
+    }
+
+    .upload-btn {
+      display: inline-block;
+      background: #238636;
+      color: white;
+      padding: 13px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .upload-btn:hover {
+      background: #2ea043;
+    }
+
+    #imageInput {
+      display: none;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin: 25px 0 15px;
+      flex-wrap: wrap;
+    }
+
+    .top-bar h2 {
+      font-size: 23px;
+    }
+
+    .clear-btn {
+      background: #da3633;
+      border: none;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .clear-btn:hover {
+      background: #f04440;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+      padding-bottom: 40px;
+    }
+
+    .empty {
+      text-align: center;
+      color: #888;
+      padding: 50px 10px;
+      grid-column: 1 / -1;
+      font-size: 18px;
+    }
+
+    .card {
+      background: #181c25;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #292e39;
+    }
+
+    .card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      cursor: pointer;
+    }
+
+    .card-info {
+      padding: 10px;
+    }
+
+    .card-name {
+      color: #ddd;
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 10px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 7px;
+    }
+
+    .buttons button {
+      flex: 1;
+      border: none;
+      padding: 9px 5px;
+      border-radius: 7px;
+      cursor: pointer;
+      color: white;
+      font-weight: bold;
+    }
+
+    .download {
+      background: #1f6feb;
+    }
+
+    .delete {
+      background: #da3633;
+    }
+
+    .download:hover {
+      background: #388bfd;
+    }
+
+    .delete:hover {
+      background: #f04440;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.9);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal img {
+      max-width: 95%;
+      max-height: 90vh;
+      border-radius: 10px;
+    }
+
+    .close {
+      position: fixed;
+      top: 20px;
+      left: 25px;
+      font-size: 35px;
+      color: white;
+      cursor: pointer;
+    }
+
+    footer {
+      text-align: center;
+      color: #777;
+      padding: 25px;
+      font-size: 13px;
+    }
+
+    @media (max-width: 500px) {
+      header h1 {
+        font-size: 27px;
+      }
+
+      .gallery {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+
+      .card img {
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>📸 معرض صوري</h1>
+    <p>ارفع صورك واحفظها في معرضك الخاص</p>
+  </header>
+
+  <main class="container">
+
+    <div class="upload-box">
+      <div class="upload-icon">📷</div>
+
+      <h2>أضف صورك</h2>
+      <p>يمكنك اختيار صورة واحدة أو عدة صور</p>
+
+      <label class="upload-btn" for="imageInput">
+        اختيار الصور
+      </label>
+
+      <input
+        type="file"
+        id="imageInput"
+        accept="image/*"
+        multiple
+      >
+    </div>
+
+    <div class="top-bar">
+      <h2>🖼️ معرض الصور <span id="count">0</span></h2>
+
+      <button class="clear-btn" onclick="clearAll()">
+        حذف الكل
+      </button>
+    </div>
+
+    <div class="gallery" id="gallery">
+      <div class="empty">
+        لا توجد صور حتى الآن 📭
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    جميع الصور محفوظة على جهازك داخل المتصفح
+  </footer>
+
+  <div class="modal" id="modal" onclick="closeModal()">
+    <span class="close">×</span>
+    <img id="modalImage" src="" alt="صورة مكبرة">
+  </div>
+
+  <script>
+    const imageInput = document.getElementById("imageInput");
+    const gallery = document.getElementById("gallery");
+    const count = document.getElementById("count");
+    const modal = document.getElementById("modal");
+    const modalImage = document.getElementById("modalImage");
+
+    let images = JSON.parse(localStorage.getItem("myGallery")) || [];
+
+    function saveImages() {
+      try {
+        localStorage.setItem("myGallery", JSON.stringify(images));
+      } catch (error) {
+        alert("مساحة التخزين ممتلئة. حاول حذف بعض الصور.");
+      }
+    }
+
+    function renderGallery() {
+      gallery.innerHTML = "";
+      count.textContent = images.length;
+
+      if (images.length === 0) {
+        gallery.innerHTML = `
+          <div class="empty">
+            لا توجد صور حتى الآن 📭
+          </div>
+        `;
+        return;
+      }
+
+      images.forEach((image, index) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        card.innerHTML = `
+          <img
+            src="${image.data}"
+            alt="${escapeHTML(image.name)}"
+            onclick="openModal(${index})"
+          >
+
+          <div class="card-info">
+            <div class="card-name" title="${escapeHTML(image.name)}">
+              ${escapeHTML(image.name)}
+            </div>
+
+            <div class="buttons">
+              <button class="download" onclick="downloadImage(${index})">
+                تحميل
+              </button>
+
+              <button class="delete" onclick="deleteImage(${index})">
+                حذف
+              </button>
+            </div>
+          </div>
+        `;
+
+        gallery.appendChild(card);
+      });
+    }
+
+    imageInput.addEventListener("change", function() {
+      const files = Array.from(this.files);
+
+      if (files.length === 0) return;
+
+      let loaded = 0;
+
+      files.forEach(file => {
+        if (!file.type.startsWith("image/")) {
+          loaded++;
+          return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function(event) {
+          images.unshift({
+            name: file.name,
+            data: event.target.result
+          });
+
+          loaded++;
+
+          if (loaded === files.length) {
+            saveImages();
+            renderGallery();
+          }
+        };
+
+        reader.readAsDataURL(file);
+      });
+
+      this.value = "";
+    });
+
+    function deleteImage(index) {
+      if (confirm("هل تريد حذف هذه الصورة؟")) {
+        images.splice(index, 1);
+        saveImages();
+        renderGallery();
+      }
+    }
+
+    function clearAll() {
+      if (images.length === 0) return;
+
+      if (confirm("هل تريد حذف جميع الصور؟")) {
+        images = [];
+        saveImages();
+        renderGallery();
+      }
+    }
+
+    function downloadImage(index) {
+      const image = images[index];
+
+      const link = document.createElement("a");
+      link.href = image.data;
+      link.download = image.name || "image.png";
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function openModal(index) {
+      modalImage.src = images[index].data;
+      modal.classList.add("active");
+    }
+
+    function closeModal() {
+      modal.classList.remove("active");
+      modalImage.src = "";
+    }
+
+    function escapeHTML(text) {
+      return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    renderGallery();
+  </script>
+
+</body>
+</html>
